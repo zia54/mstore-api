@@ -65,7 +65,7 @@ export default function SellerOrdersPage() {
                 <div>
                   <span className="font-mono font-bold text-amber-400">{sub.subOrderNumber}</span>
                   <p className="text-xs text-slate-400">
-                    Customer: {sub.order?.customer?.fullName} • Net Payout: PKR {(sub.sellerNetMinor / 100).toLocaleString()}
+                    Customer: {sub.order?.customer?.fullName} â€¢ Net Payout: PKR {(sub.sellerNetMinor / 100).toLocaleString()}
                   </p>
                 </div>
                 <span className="rounded-full bg-amber-500/20 px-3 py-1 text-xs font-bold text-amber-300 h-fit">

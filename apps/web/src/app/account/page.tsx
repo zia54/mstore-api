@@ -61,7 +61,7 @@ export default function CustomerAccountPage() {
             <div>
               <p className="text-xs text-slate-400">Logged In Account</p>
               <h2 className="text-xl font-bold text-white">{user.fullName}</h2>
-              <p className="text-sm text-slate-400">{user.email} • Role: {user.role}</p>
+              <p className="text-sm text-slate-400">{user.email} â€¢ Role: {user.role}</p>
             </div>
             <div className="text-right">
               <p className="text-xs text-slate-400">Total Orders Placed</p>
@@ -85,7 +85,7 @@ export default function CustomerAccountPage() {
                   <div>
                     <span className="font-mono font-bold text-amber-400 text-lg">{order.orderNumber}</span>
                     <p className="text-xs text-slate-400">
-                      Placed on {new Date(order.createdAt).toLocaleDateString()} • Payment: {order.paymentMethod}
+                      Placed on {new Date(order.createdAt).toLocaleDateString()} â€¢ Payment: {order.paymentMethod}
                     </p>
                   </div>
                   <div className="text-right">

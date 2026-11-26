@@ -96,7 +96,7 @@ export default function TrackOrderPage() {
                     </span>
                   </div>
                   <p className="text-xs text-slate-400">
-                    Sold by: <strong className="text-slate-200">{sub.seller?.storeName}</strong> • Courier Tracking:{' '}
+                    Sold by: <strong className="text-slate-200">{sub.seller?.storeName}</strong> â€¢ Courier Tracking:{' '}
                     <span className="font-mono text-emerald-400">
                       {sub.trackingNumber || 'Awaiting Courier Dispatch'}
                     </span>

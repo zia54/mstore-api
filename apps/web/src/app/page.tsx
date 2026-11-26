@@ -1,5 +1,4 @@
 'use client';
-export const dynamic = 'force-dynamic';
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
@@ -251,7 +250,7 @@ export default function MStoreHomePage() {
         <div className="rounded-3xl border border-slate-800 bg-gradient-to-r from-slate-900 via-slate-900 to-amber-950/30 p-8 md:p-10 flex flex-wrap items-center justify-between gap-6">
           <div className="max-w-2xl space-y-3">
             <span className="inline-block rounded-full bg-amber-500/20 px-3 py-1 text-xs font-semibold text-amber-300">
-              Verified Multi-Vendor Ecosystem Ã¢â‚¬Â¢ Escrow Protected
+              Verified Multi-Vendor Ecosystem ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢ Escrow Protected
             </span>
             <h1 className="text-3xl md:text-4xl font-extrabold text-white leading-tight">
               Shop Direct From Verified Flagship Brands Across Pakistan
@@ -451,7 +450,7 @@ export default function MStoreHomePage() {
                       <div>
                         <p className="font-semibold text-white">{item.title}</p>
                         <p className="text-xs text-slate-400">
-                          Qty: {item.quantity} Ã¢â‚¬Â¢ {formatPrice(item.priceMinor * item.quantity)}
+                          Qty: {item.quantity} ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢ {formatPrice(item.priceMinor * item.quantity)}
                         </p>
                       </div>
                       <button

@@ -1,5 +1,4 @@
 'use client';
-export const dynamic = 'force-dynamic';
 
 import React, { useState } from 'react';
 import Link from 'next/link';
@@ -97,7 +96,7 @@ export default function TrackOrderPage() {
                     </span>
                   </div>
                   <p className="text-xs text-slate-400">
-                    Sold by: <strong className="text-slate-200">{sub.seller?.storeName}</strong> Ã¢â‚¬Â¢ Courier Tracking:{' '}
+                    Sold by: <strong className="text-slate-200">{sub.seller?.storeName}</strong> ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢ Courier Tracking:{' '}
                     <span className="font-mono text-emerald-400">
                       {sub.trackingNumber || 'Awaiting Courier Dispatch'}
                     </span>

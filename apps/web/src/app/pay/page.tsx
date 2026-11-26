@@ -1,5 +1,4 @@
 'use client';
-export const dynamic = 'force-dynamic';
 
 import React, { useState } from 'react';
 import Link from 'next/link';
@@ -51,8 +50,8 @@ export default function DigitalPaymentPage() {
       <main className="mx-auto max-w-2xl p-6 space-y-6">
         <div className="rounded-2xl border border-emerald-500/30 bg-emerald-950/20 p-5 space-y-2 text-sm">
           <h2 className="font-bold text-emerald-300">Official M Store Merchant Accounts</h2>
-          <p>Ã¢â‚¬Â¢ <strong>EasyPaisa / JazzCash Merchant:</strong> 0300-8492019 (M Store Pvt Ltd)</p>
-          <p>Ã¢â‚¬Â¢ <strong>Raast ID / IBAN:</strong> PK36MEZN0001920104829102 (Meezan Bank)</p>
+          <p>ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢ <strong>EasyPaisa / JazzCash Merchant:</strong> 0300-8492019 (M Store Pvt Ltd)</p>
+          <p>ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢ <strong>Raast ID / IBAN:</strong> PK36MEZN0001920104829102 (Meezan Bank)</p>
           <p className="text-xs text-slate-400 pt-1">Transfer your order total and enter the Transaction ID (TID) below.</p>
         </div>
 

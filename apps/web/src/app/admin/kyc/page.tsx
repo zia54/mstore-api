@@ -1,5 +1,5 @@
-export const dynamic = 'force-dynamic';
 'use client';
+export const dynamic = 'force-dynamic';
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
@@ -45,7 +45,7 @@ export default function AdminKycPage() {
             <div>
               <h2 className="text-lg font-bold text-white">{s.storeName}</h2>
               <p className="text-xs text-slate-400">
-                Legal Entity: {s.legalBusinessName} â€¢ NTN/Tax ID: <strong className="text-amber-300">{s.ntnOrTaxId || 'N/A'}</strong>
+                Legal Entity: {s.legalBusinessName} Ã¢â‚¬Â¢ NTN/Tax ID: <strong className="text-amber-300">{s.ntnOrTaxId || 'N/A'}</strong>
               </p>
               <p className="text-xs text-slate-400 mt-1">Owner: {s.user?.fullName} ({s.user?.email})</p>
             </div>

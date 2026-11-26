@@ -1,5 +1,5 @@
-export const dynamic = 'force-dynamic';
 'use client';
+export const dynamic = 'force-dynamic';
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
@@ -117,7 +117,7 @@ export default function AdminPortalPage() {
                     </div>
                     <div className="text-right">
                       <span className="rounded-full bg-emerald-500/20 px-3 py-1 text-xs font-semibold text-emerald-300">
-                        {order.paymentMethod} â€¢ {order.status}
+                        {order.paymentMethod} Ã¢â‚¬Â¢ {order.status}
                       </span>
                       <p className="mt-1 font-bold text-white">
                         Total: PKR {(order.grandTotalMinor / 100).toLocaleString()}
@@ -135,7 +135,7 @@ export default function AdminPortalPage() {
                           <span className="font-semibold text-slate-200">
                             {sub.subOrderNumber}
                           </span>{' '}
-                          â€¢ Seller: <span className="text-amber-300">{sub.seller?.storeName}</span>
+                          Ã¢â‚¬Â¢ Seller: <span className="text-amber-300">{sub.seller?.storeName}</span>
                         </div>
                         <div className="flex gap-4">
                           <span className="text-slate-400">

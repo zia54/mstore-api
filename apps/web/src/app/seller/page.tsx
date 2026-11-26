@@ -1,3 +1,4 @@
+export const dynamic = 'force-dynamic';
 'use client';
 
 import React, { useState, useEffect } from 'react';
@@ -233,7 +234,7 @@ export default function SellerPortalPage() {
                   <div>
                     <h3 className="font-semibold text-white">{p.title}</h3>
                     <p className="text-xs text-slate-400">
-                      SKU: {p.variants?.[0]?.sku} • Stock: {offer?.availableQty ?? 0} units
+                      SKU: {p.variants?.[0]?.sku} â€¢ Stock: {offer?.availableQty ?? 0} units
                     </p>
                   </div>
                   <div className="text-right">

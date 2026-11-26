@@ -116,7 +116,7 @@ export default function AdminPortalPage() {
                     </div>
                     <div className="text-right">
                       <span className="rounded-full bg-emerald-500/20 px-3 py-1 text-xs font-semibold text-emerald-300">
-                        {order.paymentMethod} ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢ {order.status}
+                        {order.paymentMethod} ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â¢ {order.status}
                       </span>
                       <p className="mt-1 font-bold text-white">
                         Total: PKR {(order.grandTotalMinor / 100).toLocaleString()}
@@ -134,7 +134,7 @@ export default function AdminPortalPage() {
                           <span className="font-semibold text-slate-200">
                             {sub.subOrderNumber}
                           </span>{' '}
-                          ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢ Seller: <span className="text-amber-300">{sub.seller?.storeName}</span>
+                          ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â¢ Seller: <span className="text-amber-300">{sub.seller?.storeName}</span>
                         </div>
                         <div className="flex gap-4">
                           <span className="text-slate-400">

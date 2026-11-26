@@ -1,0 +1,252 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Currency {
+  PKR
+  USD
+}
+
+enum UserRole {
+  SUPER_ADMIN
+  ADMIN
+  FINANCE_ADMIN
+  SUPPORT_AGENT
+  SELLER
+  AFFILIATE
+  CUSTOMER
+  B2B_BUYER
+}
+
+enum AccountStatus {
+  PENDING_VERIFICATION
+  ACTIVE
+  SUSPENDED
+  DEACTIVATED
+}
+
+enum SellerKycStatus {
+  UNSUBMITTED
+  UNDER_REVIEW
+  APPROVED
+  REJECTED
+}
+
+enum OrderStatus {
+  PENDING_PAYMENT
+  PAYMENT_FAILED
+  CONFIRMED
+  PROCESSING
+  SHIPPED
+  DELIVERED
+  CANCELLED
+  REFUNDED
+}
+
+enum LedgerAccountType {
+  ASSET_GATEWAY_CLEARING
+  ASSET_COD_RECEIVABLE
+  ASSET_PLATFORM_BANK
+  LIABILITY_SELLER_PAYABLE
+  LIABILITY_AFFILIATE_PAYABLE
+  LIABILITY_TAX_PAYABLE
+  REVENUE_COMMISSION
+  EXPENSE_GATEWAY_FEE
+  EXPENSE_REFUND
+}
+
+model User {
+  id               String           @id @default(uuid()) @db.Uuid
+  email            String           @unique
+  phone            String?          @unique
+  passwordHash     String
+  fullName         String
+  role             UserRole         @default(CUSTOMER)
+  status           AccountStatus    @default(ACTIVE)
+  failedLoginCount Int              @default(0)
+  lockedUntil      DateTime?
+  createdAt        DateTime         @default(now())
+  updatedAt        DateTime         @updatedAt
+
+  sellerProfile    SellerProfile?
+  affiliateProfile AffiliateProfile?
+  orders           Order[]
+  auditLogs        AuditLog[]       @relation("ActorLogs")
+}
+
+model SellerProfile {
+  id                String          @id @default(uuid()) @db.Uuid
+  userId            String          @unique @db.Uuid
+  storeName         String          @unique
+  storeSlug         String          @unique
+  legalBusinessName String
+  ntnOrTaxId        String?
+  kycStatus         SellerKycStatus @default(UNDER_REVIEW)
+  commissionRateBps Int             @default(800) // 8.00%
+  createdAt         DateTime        @default(now())
+
+  user              User            @relation(fields: [userId], references: [id])
+  offers            SellerOffer[]
+  subOrders         SubOrder[]
+}
+
+model AffiliateProfile {
+  id            String   @id @default(uuid()) @db.Uuid
+  userId        String   @unique @db.Uuid
+  referralCode  String   @unique
+  commissionBps Int      @default(300) // 3.00%
+  isApproved    Boolean  @default(false)
+  createdAt     DateTime @default(now())
+
+  user          User     @relation(fields: [userId], references: [id])
+  orders        Order[]
+}
+
+model Category {
+  id       String    @id @default(uuid()) @db.Uuid
+  name     String
+  slug     String    @unique
+  products Product[]
+}
+
+model Product {
+  id          String           @id @default(uuid()) @db.Uuid
+  categoryId  String           @db.Uuid
+  title       String
+  slug        String           @unique
+  brand       String?
+  description String
+  imageUrl    String
+  isApproved  Boolean          @default(true)
+  createdAt   DateTime         @default(now())
+
+  category    Category         @relation(fields: [categoryId], references: [id])
+  variants    ProductVariant[]
+}
+
+model ProductVariant {
+  id           String        @id @default(uuid()) @db.Uuid
+  productId    String        @db.Uuid
+  sku          String        @unique
+  optionValues Json
+  product      Product       @relation(fields: [productId], references: [id], onDelete: Cascade)
+  offers       SellerOffer[]
+}
+
+model SellerOffer {
+  id             String         @id @default(uuid()) @db.Uuid
+  sellerId       String         @db.Uuid
+  variantId      String         @db.Uuid
+  currency       Currency       @default(PKR)
+  priceMinor     BigInt
+  availableQty   Int            @default(0)
+  reservedQty    Int            @default(0)
+  isActive       Boolean        @default(true)
+
+  seller         SellerProfile  @relation(fields: [sellerId], references: [id])
+  variant        ProductVariant @relation(fields: [variantId], references: [id])
+  orderItems     OrderItem[]
+
+  @@unique([sellerId, variantId])
+}
+
+model Order {
+  id              String            @id @default(uuid()) @db.Uuid
+  orderNumber     String            @unique
+  customerId      String            @db.Uuid
+  affiliateId     String?           @db.Uuid
+  currency        Currency          @default(PKR)
+  subtotalMinor   BigInt
+  shippingMinor   BigInt
+  taxMinor        BigInt
+  grandTotalMinor BigInt
+  paymentMethod   String            // "COD", "JAZZCASH", "EASYPAY", "STRIPE"
+  status          OrderStatus       @default(CONFIRMED)
+  shippingAddress Json
+  idempotencyKey  String            @unique
+  createdAt       DateTime          @default(now())
+
+  customer        User              @relation(fields: [customerId], references: [id])
+  affiliate       AffiliateProfile? @relation(fields: [affiliateId], references: [id])
+  subOrders       SubOrder[]
+}
+
+model SubOrder {
+  id              String        @id @default(uuid()) @db.Uuid
+  orderId         String        @db.Uuid
+  sellerId        String        @db.Uuid
+  subOrderNumber  String        @unique
+  status          OrderStatus   @default(CONFIRMED)
+  subtotalMinor   BigInt
+  commissionMinor BigInt
+  sellerNetMinor  BigInt
+  trackingNumber  String?
+
+  order           Order         @relation(fields: [orderId], references: [id])
+  seller          SellerProfile @relation(fields: [sellerId], references: [id])
+  items           OrderItem[]
+}
+
+model OrderItem {
+  id              String      @id @default(uuid()) @db.Uuid
+  subOrderId      String      @db.Uuid
+  offerId         String      @db.Uuid
+  titleSnapshot   String
+  quantity        Int
+  unitPriceMinor  BigInt
+  totalPriceMinor BigInt
+
+  subOrder        SubOrder    @relation(fields: [subOrderId], references: [id], onDelete: Cascade)
+  offer           SellerOffer @relation(fields: [offerId], references: [id])
+}
+
+model LedgerAccount {
+  id       String            @id @default(uuid()) @db.Uuid
+  code     String            @unique
+  name     String
+  type     LedgerAccountType
+  currency Currency
+  ownerId  String?           @db.Uuid
+  entries  LedgerEntry[]
+}
+
+model LedgerTransaction {
+  id             String        @id @default(uuid()) @db.Uuid
+  referenceType  String
+  referenceId    String
+  description    String
+  idempotencyKey String        @unique
+  postedAt       DateTime      @default(now())
+  entries        LedgerEntry[]
+}
+
+model LedgerEntry {
+  id            String            @id @default(uuid()) @db.Uuid
+  transactionId String            @db.Uuid
+  accountId     String            @db.Uuid
+  currency      Currency
+  debitMinor    BigInt            @default(0)
+  creditMinor   BigInt            @default(0)
+  createdAt     DateTime          @default(now())
+
+  transaction   LedgerTransaction @relation(fields: [transactionId], references: [id])
+  account       LedgerAccount     @relation(fields: [accountId], references: [id])
+}
+
+model AuditLog {
+  id         String   @id @default(uuid()) @db.Uuid
+  actorId    String?  @db.Uuid
+  actorRole  String
+  action     String
+  targetType String
+  targetId   String
+  metadata   Json
+  createdAt  DateTime @default(now())
+
+  actor      User?    @relation("ActorLogs", fields: [actorId], references: [id])
+}

@@ -1,0 +1,200 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../node_modules/.prisma/client"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id               String           @id @default(uuid())
+  email            String           @unique
+  phone            String?          @unique
+  passwordHash     String
+  fullName         String
+  role             String           @default("CUSTOMER")
+  status           String           @default("ACTIVE")
+  failedLoginCount Int              @default(0)
+  lockedUntil      DateTime?
+  createdAt        DateTime         @default(now())
+  updatedAt        DateTime         @updatedAt
+
+  sellerProfile    SellerProfile?
+  affiliateProfile AffiliateProfile?
+  orders           Order[]
+  auditLogs        AuditLog[]       @relation("ActorLogs")
+}
+
+model SellerProfile {
+  id                String        @id @default(uuid())
+  userId            String        @unique
+  storeName         String        @unique
+  storeSlug         String        @unique
+  legalBusinessName String
+  ntnOrTaxId        String?
+  kycStatus         String        @default("UNDER_REVIEW")
+  commissionRateBps Int           @default(800)
+  createdAt         DateTime      @default(now())
+
+  user              User          @relation(fields: [userId], references: [id])
+  offers            SellerOffer[]
+  subOrders         SubOrder[]
+}
+
+model AffiliateProfile {
+  id            String   @id @default(uuid())
+  userId        String   @unique
+  referralCode  String   @unique
+  commissionBps Int      @default(300)
+  isApproved    Boolean  @default(false)
+  createdAt     DateTime @default(now())
+
+  user          User     @relation(fields: [userId], references: [id])
+  orders        Order[]
+}
+
+model Category {
+  id       String    @id @default(uuid())
+  name     String
+  slug     String    @unique
+  products Product[]
+}
+
+model Product {
+  id          String           @id @default(uuid())
+  categoryId  String
+  title       String
+  slug        String           @unique
+  brand       String?
+  description String
+  imageUrl    String
+  isApproved  Boolean          @default(true)
+  createdAt   DateTime         @default(now())
+
+  category    Category         @relation(fields: [categoryId], references: [id])
+  variants    ProductVariant[]
+}
+
+model ProductVariant {
+  id           String        @id @default(uuid())
+  productId    String
+  sku          String        @unique
+  optionValues String
+  product      Product       @relation(fields: [productId], references: [id], onDelete: Cascade)
+  offers       SellerOffer[]
+}
+
+model SellerOffer {
+  id           String         @id @default(uuid())
+  sellerId     String
+  variantId    String
+  currency     String         @default("PKR")
+  priceMinor   Int
+  availableQty Int            @default(0)
+  reservedQty  Int            @default(0)
+  isActive     Boolean        @default(true)
+
+  seller       SellerProfile  @relation(fields: [sellerId], references: [id])
+  variant      ProductVariant @relation(fields: [variantId], references: [id])
+  orderItems   OrderItem[]
+
+  @@unique([sellerId, variantId])
+}
+
+model Order {
+  id              String            @id @default(uuid())
+  orderNumber     String            @unique
+  customerId      String
+  affiliateId     String?
+  currency        String            @default("PKR")
+  subtotalMinor   Int
+  shippingMinor   Int
+  taxMinor        Int
+  grandTotalMinor Int
+  paymentMethod   String
+  status          String            @default("CONFIRMED")
+  shippingAddress String
+  idempotencyKey  String            @unique
+  createdAt       DateTime          @default(now())
+
+  customer        User              @relation(fields: [customerId], references: [id])
+  affiliate       AffiliateProfile? @relation(fields: [affiliateId], references: [id])
+  subOrders       SubOrder[]
+}
+
+model SubOrder {
+  id              String        @id @default(uuid())
+  orderId         String
+  sellerId        String
+  subOrderNumber  String        @unique
+  status          String        @default("CONFIRMED")
+  subtotalMinor   Int
+  commissionMinor Int
+  sellerNetMinor  Int
+  trackingNumber  String?
+
+  order           Order         @relation(fields: [orderId], references: [id])
+  seller          SellerProfile @relation(fields: [sellerId], references: [id])
+  items           OrderItem[]
+}
+
+model OrderItem {
+  id              String      @id @default(uuid())
+  subOrderId      String
+  offerId         String
+  titleSnapshot   String
+  quantity        Int
+  unitPriceMinor  Int
+  totalPriceMinor Int
+
+  subOrder        SubOrder    @relation(fields: [subOrderId], references: [id], onDelete: Cascade)
+  offer           SellerOffer @relation(fields: [offerId], references: [id])
+}
+
+model LedgerAccount {
+  id       String        @id @default(uuid())
+  code     String        @unique
+  name     String
+  type     String
+  currency String
+  ownerId  String?
+  entries  LedgerEntry[]
+}
+
+model LedgerTransaction {
+  id             String        @id @default(uuid())
+  referenceType  String
+  referenceId    String
+  description    String
+  idempotencyKey String        @unique
+  postedAt       DateTime      @default(now())
+  entries        LedgerEntry[]
+}
+
+model LedgerEntry {
+  id            String            @id @default(uuid())
+  transactionId String
+  accountId     String
+  currency      String
+  debitMinor    Int               @default(0)
+  creditMinor   Int               @default(0)
+  createdAt     DateTime          @default(now())
+
+  transaction   LedgerTransaction @relation(fields: [transactionId], references: [id])
+  account       LedgerAccount     @relation(fields: [accountId], references: [id])
+}
+
+model AuditLog {
+  id         String   @id @default(uuid())
+  actorId    String?
+  actorRole  String
+  action     String
+  targetType String
+  targetId   String
+  metadata   String
+  createdAt  DateTime @default(now())
+
+  actor      User?    @relation("ActorLogs", fields: [actorId], references: [id])
+}
